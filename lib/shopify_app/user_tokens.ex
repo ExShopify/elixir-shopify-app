@@ -1,11 +1,9 @@
 defmodule ShopifyApp.UserTokens do
   use ShopifyApp.Repo, define_types: ShopifyApp.Schema.UserToken.t()
 
-  require Ecto.Query
-
   alias ShopifyApp.Repo
   alias ShopifyApp.Schema
-  alias ShopifyApp.UserTokens.Query
+  alias ShopifyApp.Query
 
   @transferable_shopify_api_attrs [
     :app_name,
@@ -22,10 +20,13 @@ defmodule ShopifyApp.UserTokens do
 
   @spec all() :: list(t())
   @spec all(String.t()) :: list(t())
-  def all(myshopify_domain),
-    do: Query.from() |> Query.where_myshopify_domain(myshopify_domain) |> Repo.all()
+  def all(myshopify_domain) do
+    Query.UserToken.from()
+    |> Query.UserToken.where_myshopify_domain(myshopify_domain)
+    |> Repo.all()
+  end
 
-  def all, do: Repo.all(Query.from())
+  def all, do: Repo.all(Query.UserToken.from())
 
   def upsert(%ShopifyAPI.UserToken{} = token) do
     token

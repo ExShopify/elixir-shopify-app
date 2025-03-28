@@ -2,6 +2,7 @@ defmodule ShopifyApp.AuthTokens do
   @moduledoc false
   alias ShopifyApp.Repo
   alias ShopifyApp.Schema
+  alias ShopifyApp.Query
 
   def all, do: Repo.all(Schema.AuthToken)
 
@@ -12,12 +13,16 @@ defmodule ShopifyApp.AuthTokens do
     |> Repo.insert_or_update()
   end
 
-  def find_or_new(%{shop_myshopify_domain: shop_myshopify_domain, app_name: app_name}) do
-    case Repo.get_by(Schema.AuthToken,
-           shop_myshopify_domain: shop_myshopify_domain,
-           app_name: app_name
-         ) do
-      nil -> %Schema.AuthToken{}
+  def find(myshopify_domain, app_name) do
+    Query.AuthToken.from()
+    |> Query.AuthToken.where_myshopify_domain(myshopify_domain)
+    |> Query.AuthToken.where_app_name(app_name)
+    |> Repo.one()
+  end
+
+  def find_or_new(%{shop_myshopify_domain: myshopify_domain, app_name: app_name}) do
+    case find(myshopify_domain, app_name) do
+      nil -> %Schema.AuthToken{shop_myshopify_domain: myshopify_domain, app_name: app_name}
       auth_token -> auth_token
     end
   end

@@ -1,8 +1,10 @@
 defmodule ShopifyApp.Shops do
   @moduledoc false
   use ShopifyApp.Repo, define_types: ShopifyApp.Schema.Shop.t()
+
   alias ShopifyApp.Repo
   alias ShopifyApp.Schema
+  alias ShopifyApp.Query
 
   def all, do: Repo.all(Schema.Shop)
 
@@ -11,7 +13,8 @@ defmodule ShopifyApp.Shops do
     do: shop |> find_or_new() |> Schema.Shop.changeset(shop) |> Repo.insert_or_update()
 
   @spec find(String.t()) :: t() | nil
-  def find(myshopify_domain), do: Repo.get_by(Schema.Shop, myshopify_domain: myshopify_domain)
+  def find(myshopify_domain),
+    do: Query.Shop.from() |> Query.Shop.where_myshopify_domain(myshopify_domain) |> Repo.one()
 
   @spec find_or_new(map()) :: t()
   def find_or_new(%{myshopify_domain: myshopify_domain}) do
