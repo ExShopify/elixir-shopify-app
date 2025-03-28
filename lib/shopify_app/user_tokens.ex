@@ -1,9 +1,9 @@
 defmodule ShopifyApp.UserTokens do
   use ShopifyApp.Repo, define_types: ShopifyApp.Schema.UserToken.t()
 
+  alias ShopifyApp.Query
   alias ShopifyApp.Repo
   alias ShopifyApp.Schema
-  alias ShopifyApp.Query
 
   @transferable_shopify_api_attrs [
     :app_name,

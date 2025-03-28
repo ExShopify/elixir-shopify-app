@@ -2,9 +2,9 @@ defmodule ShopifyApp.Shops do
   @moduledoc false
   use ShopifyApp.Repo, define_types: ShopifyApp.Schema.Shop.t()
 
+  alias ShopifyApp.Query
   alias ShopifyApp.Repo
   alias ShopifyApp.Schema
-  alias ShopifyApp.Query
 
   def all, do: Repo.all(Schema.Shop)
 
