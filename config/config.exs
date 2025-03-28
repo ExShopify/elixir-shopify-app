@@ -81,6 +81,8 @@ config :shopify_api, ShopifyAPI.ShopServer,
   initializer: {ShopifyApp.ShopifyAPI.Initializer, :shop_init, []},
   persistence: {ShopifyApp.ShopifyAPI.Initializer, :shop_persist, []}
 
+config :shopify_api, ShopifyAPI.Shop, post_login: {ShopifyApp.ShopifyAPI.PostLoginHook, :call, []}
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

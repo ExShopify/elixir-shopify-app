@@ -3,7 +3,7 @@ defmodule ShopifyApp.Worker.Install.CreateWebhook do
 
   alias ShopifyApp.Shopify
 
-  @impl true
+  @impl Oban.Worker
   def perform(%{args: %{"myshopify_domain" => myshopify_domain, "webhook" => webhook}}) do
     {:ok, token} = ShopifyAPI.AuthTokenServer.get(myshopify_domain, ShopifyApp.Config.app_name())
     Shopify.CreateWebhook.create(token, webhook)
