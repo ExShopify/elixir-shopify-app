@@ -7,7 +7,8 @@ defmodule ShopifyApp.WebhookHandler do
 
   def handle_webhook(app, shop, myshopify_domain, payload) do
     Logger.debug(
-      "incoming webhook #{inspect(app)} #{inspect(shop)} #{inspect(myshopify_domain)} #{inspect(payload)}"
+      "incoming webhook #{inspect(app)} #{inspect(shop)} #{inspect(payload)}",
+      myshopify_domain: myshopify_domain
     )
   end
 end

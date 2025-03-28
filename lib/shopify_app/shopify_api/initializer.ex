@@ -1,7 +1,5 @@
 defmodule ShopifyApp.ShopifyAPI.Initializer do
   @moduledoc false
-  require Logger
-
   alias ShopifyApp.AuthTokens
   alias ShopifyApp.Shops
   alias ShopifyApp.UserTokens

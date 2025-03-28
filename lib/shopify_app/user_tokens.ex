@@ -2,7 +2,6 @@ defmodule ShopifyApp.UserTokens do
   use ShopifyApp.Repo, define_types: ShopifyApp.Schema.UserToken.t()
 
   require Ecto.Query
-  require Logger
 
   alias ShopifyApp.Repo
   alias ShopifyApp.Schema
