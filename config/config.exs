@@ -62,6 +62,15 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+config :shopify_app, ShopifyApp.Config,
+  shopify_config_file:
+    Path.join([
+      __ENV__.file |> Path.expand() |> Path.dirname(),
+      "..",
+      "app-extension",
+      "shopify.app.toml"
+    ])
+
 ###################
 # ShopifyAPI Config
 ###################
