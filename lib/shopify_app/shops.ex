@@ -23,4 +23,7 @@ defmodule ShopifyApp.Shops do
 
   @spec delete(t()) :: ok_changeset_error()
   def delete(shop) when is_struct(shop, Schema.Shop), do: Repo.delete(shop)
+
+  def to_shopify_api_struct(%Schema.Shop{myshopify_domain: domain}),
+    do: %ShopifyAPI.Shop{domain: domain}
 end

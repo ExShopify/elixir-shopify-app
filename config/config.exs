@@ -69,6 +69,10 @@ config :shopify_api, ShopifyAPI.AuthTokenServer,
   initializer: {ShopifyApp.ShopifyAPI.Initializer, :auth_token_init, []},
   persistence: {ShopifyApp.ShopifyAPI.Initializer, :auth_token_persist, []}
 
+config :shopify_api, ShopifyAPI.UserTokenServer,
+  initializer: {ShopifyApp.ShopifyAPI.Initializer, :user_token_init, []},
+  persistence: {ShopifyApp.ShopifyAPI.Initializer, :user_token_persist, []}
+
 config :shopify_api, ShopifyAPI.AppServer,
   initializer: {ShopifyApp.ShopifyAPI.Initializer, :app_init, []},
   persistence: nil
