@@ -14,13 +14,14 @@ Everything you need to get [Elixir Shopify API](https://github.com/pixelunion/el
 1. Setup a Shopify App
   - Add the API key and secret to your `.envrc.private`
   - Update the allowed URLs to include `https://public-facing-url.ngrok.com/shop/authorized/your_project_name`
+  - Update the shopify toml file `app-extension/shopify.app.toml`
+  - Follow the install instructions in `app-extension/README.md`
 1. Start your database `docker-compose up -d`
 1. Fetch dependencies
   - `mix deps.get`
   - `mix ecto.setup`
-  - `cd assets && yarn install && cd ..`
 1. Start your app `mix phx.server` or `iex -S mix phx.server`
-1. Initiate install via `localhost:4000/shop/install?app=new_app_name&shop=mydevshop.myshopify.com`
+1. Initiate install, go to your app in the partners dashboard and "Test Your App"
 
 ## Credits
 
