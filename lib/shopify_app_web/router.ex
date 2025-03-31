@@ -19,11 +19,6 @@ defmodule ShopifyAppWeb.Router do
     plug ShopifyAPI.Plugs.PutShopifyContentHeaders
   end
 
-  pipeline :shop_admin_api do
-    plug :accepts, ["json"]
-    plug ShopifyAPI.Plugs.AuthShopSessionToken
-  end
-
   scope "/", ShopifyAppWeb do
     pipe_through :browser
 
@@ -32,14 +27,6 @@ defmodule ShopifyAppWeb.Router do
 
   scope "/shop", ShopifyAPI do
     forward("/", Router)
-  end
-
-  scope "/api" do
-    scope "/admin" do
-      pipe_through :shop_admin_api
-
-      forward "/", ShopifyApp.Plug.AdminAbsintheWrapper, schema: ShopifyAppGraphQL.AdminSchema
-    end
   end
 
   scope "/shop_admin/:app", ShopifyAppWeb do

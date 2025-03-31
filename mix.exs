@@ -48,8 +48,6 @@ defmodule ShopifyApp.MixProject do
       {:faker, "~> 0.17", only: :test},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       # eveyrthing else
-      {:absinthe, "~> 1.7.0"},
-      {:absinthe_plug, "~> 1.5"},
       {:ecto_sql, "~> 3.6"},
       {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
       {:finch, "~> 0.13"},
