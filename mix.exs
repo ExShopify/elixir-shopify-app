@@ -48,8 +48,6 @@ defmodule ShopifyApp.MixProject do
       {:faker, "~> 0.17", only: :test},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       # eveyrthing else
-      {:absinthe, "~> 1.7.0"},
-      {:absinthe_plug, "~> 1.5"},
       {:ecto_sql, "~> 3.6"},
       {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
       {:finch, "~> 0.13"},
@@ -64,9 +62,6 @@ defmodule ShopifyApp.MixProject do
       {:phoenix_live_view, "~> 0.20"},
       {:plug_cowboy, "~> 2.5"},
       {:postgrex, ">= 0.0.0"},
-      # TODO remove this
-      {:reverse_proxy_plug, "~> 3.0"},
-      {:shopify_admin_proxy, github: "hez/elixir-shopify-admin-proxy", tag: "v0.4.1"},
       {:shopify_api, github: "orbit-apps/elixir-shopifyapi", tag: "v0.15.6"},
       {:swoosh, "~> 1.3"},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
