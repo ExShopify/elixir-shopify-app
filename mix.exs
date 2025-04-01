@@ -64,13 +64,15 @@ defmodule ShopifyApp.MixProject do
       {:phoenix_live_view, "~> 0.20"},
       {:plug_cowboy, "~> 2.5"},
       {:postgrex, ">= 0.0.0"},
+      # TODO remove this
       {:reverse_proxy_plug, "~> 3.0"},
       {:shopify_admin_proxy, github: "hez/elixir-shopify-admin-proxy", tag: "v0.4.1"},
       {:shopify_api, github: "orbit-apps/elixir-shopifyapi", tag: "v0.15.6"},
       {:swoosh, "~> 1.3"},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 1.0"},
-      {:telemetry_poller, "~> 1.0"}
+      {:telemetry_poller, "~> 1.0"},
+      {:toml, "~> 0.7"}
     ]
   end
 

@@ -1,5 +1,6 @@
 defmodule ShopifyApp.AuthTokens do
   @moduledoc false
+  alias ShopifyApp.Query
   alias ShopifyApp.Repo
   alias ShopifyApp.Schema
 
@@ -12,10 +13,45 @@ defmodule ShopifyApp.AuthTokens do
     |> Repo.insert_or_update()
   end
 
-  def find_or_new(%{shop_name: shop_name, app_name: app_name}) do
-    case Repo.get_by(Schema.AuthToken, shop_name: shop_name, app_name: app_name) do
-      nil -> %Schema.AuthToken{}
+  def find(myshopify_domain, app_name) do
+    Query.AuthToken.from()
+    |> Query.AuthToken.where_myshopify_domain(myshopify_domain)
+    |> Query.AuthToken.where_app_name(app_name)
+    |> Repo.one()
+  end
+
+  def find_or_new(%{shop_myshopify_domain: myshopify_domain, app_name: app_name}) do
+    case find(myshopify_domain, app_name) do
+      nil -> %Schema.AuthToken{shop_myshopify_domain: myshopify_domain, app_name: app_name}
       auth_token -> auth_token
     end
+  end
+
+  def upsert(%ShopifyAPI.AuthToken{} = token) do
+    upsert(%{
+      shop_myshopify_domain: token.shop_name,
+      app_name: token.app_name,
+      token: token.token,
+      plus: token.plus
+    })
+  end
+
+  def upsert(%{} = params) do
+    %Schema.AuthToken{}
+    |> Schema.AuthToken.changeset(params)
+    |> Repo.insert(
+      on_conflict: {:replace, [:token, :plus]},
+      conflict_target: :shop_name
+    )
+  end
+
+  def to_shopify_api_struct(%Schema.AuthToken{} = token) do
+    %ShopifyAPI.AuthToken{
+      app_name: token.app_name,
+      shop_name: token.shop_myshopify_domain,
+      token: token.token,
+      timestamp: 0,
+      plus: token.plus
+    }
   end
 end

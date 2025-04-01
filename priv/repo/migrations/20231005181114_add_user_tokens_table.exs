@@ -3,19 +3,19 @@ defmodule ShopifyApp.Repo.Migrations.AddUserTokensTable do
 
   def change do
     create table(:user_tokens) do
-      add :app_name, :string
-      add :code, :string
-      add :token, :string
+      add :app_name, :text
+      add :code, :text
+      add :token, :text
       add :associated_user_id, :bigint
-      add :associated_user_scope, :string
+      add :associated_user_scope, :text
       add :timestamp, :bigint
       add :plus, :boolean
-      add :scope, :string
+      add :scope, :text
       add :expires_in, :bigint
       add :associated_user, :map
 
       add :shop_myshopify_domain,
-          references(:shops, column: :myshopify_domain, type: :string, on_delete: :delete_all)
+          references(:shops, column: :myshopify_domain, type: :text, on_delete: :delete_all)
 
       timestamps()
     end

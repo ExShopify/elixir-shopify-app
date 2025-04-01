@@ -3,7 +3,7 @@ defmodule ShopifyApp.Repo.Migrations.CreateShops do
 
   def change do
     create table(:shops) do
-      add :myshopify_domain, :string
+      add :myshopify_domain, :text
 
       timestamps()
     end

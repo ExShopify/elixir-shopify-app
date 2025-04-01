@@ -62,12 +62,25 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+config :shopify_app, ShopifyApp.Config,
+  shopify_config_file:
+    Path.join([
+      __ENV__.file |> Path.expand() |> Path.dirname(),
+      "..",
+      "app-extension",
+      "shopify.app.toml"
+    ])
+
 ###################
 # ShopifyAPI Config
 ###################
 config :shopify_api, ShopifyAPI.AuthTokenServer,
   initializer: {ShopifyApp.ShopifyAPI.Initializer, :auth_token_init, []},
   persistence: {ShopifyApp.ShopifyAPI.Initializer, :auth_token_persist, []}
+
+config :shopify_api, ShopifyAPI.UserTokenServer,
+  initializer: {ShopifyApp.ShopifyAPI.Initializer, :user_token_init, []},
+  persistence: {ShopifyApp.ShopifyAPI.Initializer, :user_token_persist, []}
 
 config :shopify_api, ShopifyAPI.AppServer,
   initializer: {ShopifyApp.ShopifyAPI.Initializer, :app_init, []},
@@ -76,6 +89,8 @@ config :shopify_api, ShopifyAPI.AppServer,
 config :shopify_api, ShopifyAPI.ShopServer,
   initializer: {ShopifyApp.ShopifyAPI.Initializer, :shop_init, []},
   persistence: {ShopifyApp.ShopifyAPI.Initializer, :shop_persist, []}
+
+config :shopify_api, ShopifyAPI.Shop, post_login: {ShopifyApp.ShopifyAPI.PostLoginHook, :call, []}
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

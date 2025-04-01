@@ -6,8 +6,12 @@ defmodule ShopifyApp.Schema.AuthToken do
   schema "auth_tokens" do
     field :app_name, :string
     field :plus, :boolean, default: false
-    field :shop_name, :string
     field :token, :string
+
+    belongs_to :shop, Schema.Shop,
+      references: :myshopify_domain,
+      foreign_key: :shop_myshopify_domain,
+      type: :string
 
     timestamps()
   end
@@ -15,7 +19,7 @@ defmodule ShopifyApp.Schema.AuthToken do
   @doc false
   def changeset(auth_token, attrs) do
     auth_token
-    |> cast(attrs, [:app_name, :shop_name, :token, :plus])
-    |> validate_required([:app_name, :shop_name, :token, :plus])
+    |> cast(attrs, [:app_name, :shop_myshopify_domain, :token, :plus])
+    |> validate_required([:app_name, :shop_myshopify_domain, :token, :plus])
   end
 end
