@@ -9,14 +9,15 @@ defmodule ShopifyApp.MixProject do
       version: @version,
       elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: Mix.compilers(),
+      compilers: [:phoenix_live_view] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       dialyzer: [
         plt_add_apps: [:mix, :ex_unit],
         plt_file: {:no_warn, "priv/plts/dialyzer.plt"}
       ],
-      deps: deps()
+      deps: deps(),
+      listeners: [Phoenix.CodeReloader]
     ]
   end
 
@@ -27,6 +28,12 @@ defmodule ShopifyApp.MixProject do
     [
       mod: {ShopifyApp.Application, []},
       extra_applications: [:logger, :runtime_tools]
+    ]
+  end
+
+  def cli do
+    [
+      preferred_envs: [precommit: :test]
     ]
   end
 
@@ -48,22 +55,33 @@ defmodule ShopifyApp.MixProject do
       {:faker, "~> 0.17", only: :test},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       # eveyrthing else
-      {:ecto_sql, "~> 3.6"},
-      {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
+      {:bandit, "~> 1.5"},
+      {:dns_cluster, "~> 0.2.0"},
+      {:ecto_sql, "~> 3.13"},
+      {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},
       {:finch, "~> 0.13"},
-      {:gettext, "~> 0.20"},
-      {:heroicons, "~> 0.5"},
+      {:gettext, "~> 1.0"},
+      {:heroicons,
+       github: "tailwindlabs/heroicons",
+       tag: "v2.2.0",
+       sparse: "optimized",
+       app: false,
+       compile: false,
+       depth: 1},
       {:jason, "~> 1.2"},
       {:jose, "~> 1.11.2"},
+      {:lazy_html, ">= 0.1.0", only: :test},
       {:oban, "~> 2.13"},
-      {:phoenix, "~> 1.7.0"},
-      {:phoenix_ecto, "~> 4.4"},
-      {:phoenix_live_dashboard, "~> 0.8"},
-      {:phoenix_live_view, "~> 1.0"},
+      {:phoenix, "~> 1.8.5"},
+      {:phoenix_ecto, "~> 4.5"},
+      {:phoenix_html, "~> 4.1"},
+      {:phoenix_live_dashboard, "~> 0.8.3"},
+      {:phoenix_live_view, "~> 1.1.0"},
       {:plug_cowboy, "~> 2.5"},
       {:postgrex, ">= 0.0.0"},
+      {:req, "~> 0.5"},
       {:shopify_api, github: "orbit-apps/elixir-shopifyapi", tag: "v0.16.1"},
-      {:swoosh, "~> 1.3"},
+      {:swoosh, "~> 1.16"},
       {:tailwind, "~> 0.3", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
@@ -79,12 +97,18 @@ defmodule ShopifyApp.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup", "assets.setup"],
+      setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"]
+      "assets.build": ["compile", "tailwind shopify_app", "esbuild shopify_app"],
+      "assets.deploy": [
+        "tailwind shopify_app --minify",
+        "esbuild shopify_app --minify",
+        "phx.digest"
+      ],
+      precommit: ["compile --warnings-as-errors", "deps.unlock --unused", "format", "test"]
     ]
   end
 end
