@@ -92,6 +92,6 @@ config :phoenix_live_view,
 config :swoosh, :api_client, false
 
 # Disable query compile time caching for dev
-config :shopify_admin_proxy, use_cached_queries: false
+# config :shopify_admin_proxy, use_cached_queries: false
 
-config :reverse_proxy_plug, :http_client, ReverseProxyPlug.HTTPClient.Adapters.HTTPoison
+# config :reverse_proxy_plug, :http_client, ReverseProxyPlug.HTTPClient.Adapters.HTTPoison
