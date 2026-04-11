@@ -40,4 +40,8 @@ priv/plts/*.plt*
 npm-debug.log
 /assets/node_modules/
 
+# shopify app-extensions
+/app-extension/node_modules/
+/app-extension/shopify.app.dev.toml
+
 .envrc.private

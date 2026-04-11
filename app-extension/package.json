@@ -1,0 +1,16 @@
+{
+  "name": "app-extensions",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "shopify app deploy"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@shopify/cli": "^3.84.1",
+    "@shopify/shopify_function": "^1.0.5"
+  }
+}
