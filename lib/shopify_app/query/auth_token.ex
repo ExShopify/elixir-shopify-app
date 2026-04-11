@@ -17,7 +17,7 @@ defmodule ShopifyApp.Query.AuthToken do
 
   @spec where_myshopify_domain(queryable(), String.t()) :: queryable()
   def where_myshopify_domain(query \\ from(), myshopify_domain),
-    do: Query.where(query, [auth_token: at], at.myshopify_domain == ^myshopify_domain)
+    do: Query.where(query, [auth_token: at], at.shop_myshopify_domain == ^myshopify_domain)
 
   @spec where_app_name(queryable(), String.t()) :: queryable()
   def where_app_name(query \\ from(), app_name),

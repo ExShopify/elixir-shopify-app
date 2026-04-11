@@ -20,7 +20,7 @@ defmodule ShopifyApp.UserTokens do
 
   @spec all() :: list(t())
   @spec all(String.t()) :: list(t())
-  def all(myshopify_domain) do
+  def all(myshopify_domain) when is_binary(myshopify_domain) do
     Query.UserToken.from()
     |> Query.UserToken.where_myshopify_domain(myshopify_domain)
     |> Repo.all()

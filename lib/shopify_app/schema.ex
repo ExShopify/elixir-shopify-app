@@ -3,6 +3,8 @@ defmodule ShopifyApp.Schema do
     quote do
       use Ecto.Schema
 
+      alias ShopifyApp.Schema
+
       case Keyword.get(unquote(args), :id_type, :binary_id) do
         :binary_id ->
           @primary_key {:id, :binary_id, autogenerate: true}

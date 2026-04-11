@@ -1,18 +1,24 @@
 defmodule ShopifyApp.AuthTokens do
   @moduledoc false
+  use ShopifyApp.Repo, define_types: ShopifyApp.Schema.AuthToken.t()
+
   alias ShopifyApp.Query
   alias ShopifyApp.Repo
   alias ShopifyApp.Schema
 
   def all, do: Repo.all(Schema.AuthToken)
 
-  def insert(token) do
+  def insert(%{} = token) do
     token
     |> find_or_new()
     |> Schema.AuthToken.changeset(token)
     |> Repo.insert_or_update()
   end
 
+  @spec find(String.t()) :: t() | nil
+  def find(myshopify_domain), do: find(myshopify_domain, ShopifyApp.Config.app_name())
+
+  @spec find(String.t(), String.t()) :: t() | nil
   def find(myshopify_domain, app_name) do
     Query.AuthToken.from()
     |> Query.AuthToken.where_myshopify_domain(myshopify_domain)
@@ -28,6 +34,8 @@ defmodule ShopifyApp.AuthTokens do
   end
 
   def upsert(%ShopifyAPI.AuthToken{} = token) do
+    token |> dbg()
+
     upsert(%{
       shop_myshopify_domain: token.shop_name,
       app_name: token.app_name,
@@ -37,11 +45,13 @@ defmodule ShopifyApp.AuthTokens do
   end
 
   def upsert(%{} = params) do
+    params |> dbg()
+
     %Schema.AuthToken{}
     |> Schema.AuthToken.changeset(params)
     |> Repo.insert(
       on_conflict: {:replace, [:token, :plus]},
-      conflict_target: :shop_name
+      conflict_target: [:shop_myshopify_domain, :app_name]
     )
   end
 

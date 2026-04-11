@@ -3,6 +3,8 @@ defmodule ShopifyApp.Schema.AuthToken do
   use ShopifyApp.Schema
   import Ecto.Changeset
 
+  @type t :: %__MODULE__{}
+
   schema "auth_tokens" do
     field :app_name, :string
     field :plus, :boolean, default: false

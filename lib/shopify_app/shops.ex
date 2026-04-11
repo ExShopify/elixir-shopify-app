@@ -9,12 +9,15 @@ defmodule ShopifyApp.Shops do
   def all, do: Repo.all(Schema.Shop)
 
   @spec insert(map()) :: ok_changeset_error()
-  def insert(shop),
+  def insert(%{} = shop),
     do: shop |> find_or_new() |> Schema.Shop.changeset(shop) |> Repo.insert_or_update()
 
   @spec find(String.t()) :: t() | nil
-  def find(myshopify_domain),
+  def find(myshopify_domain) when is_binary(myshopify_domain),
     do: Query.Shop.from() |> Query.Shop.where_myshopify_domain(myshopify_domain) |> Repo.one()
+
+  @spec fetch(String.t()) :: ok_error_not_found()
+  def fetch(myshopify_domain), do: myshopify_domain |> find() |> Repo.ok_or_not_found()
 
   @spec find_or_new(map()) :: t()
   def find_or_new(%{myshopify_domain: myshopify_domain}) do
@@ -25,7 +28,7 @@ defmodule ShopifyApp.Shops do
   end
 
   @spec delete(t()) :: ok_changeset_error()
-  def delete(shop) when is_struct(shop, Schema.Shop), do: Repo.delete(shop)
+  def delete(%Schema.Shop{} = shop), do: Repo.delete(shop)
 
   def to_shopify_api_struct(%Schema.Shop{myshopify_domain: domain}),
     do: %ShopifyAPI.Shop{domain: domain}
