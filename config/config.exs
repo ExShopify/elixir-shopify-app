@@ -7,6 +7,12 @@
 # General application configuration
 import Config
 
+config :shopify_app, Oban,
+  engine: Oban.Engines.Basic,
+  notifier: Oban.Notifiers.Postgres,
+  queues: [default: 10],
+  repo: ShopifyApp.Repo
+
 config :shopify_app, ShopifyApp.Repo, migration_primary_key: [type: :binary_id]
 
 config :shopify_app,

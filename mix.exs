@@ -71,7 +71,7 @@ defmodule ShopifyApp.MixProject do
       {:jason, "~> 1.2"},
       {:jose, "~> 1.11.2"},
       {:lazy_html, ">= 0.1.0", only: :test},
-      {:oban, "~> 2.13"},
+      {:oban, "~> 2.19"},
       {:phoenix, "~> 1.8.5"},
       {:phoenix_ecto, "~> 4.5"},
       {:phoenix_html, "~> 4.1"},

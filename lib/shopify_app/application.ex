@@ -11,6 +11,7 @@ defmodule ShopifyApp.Application do
       ShopifyAppWeb.Telemetry,
       ShopifyApp.Repo,
       {DNSCluster, query: Application.get_env(:shopify_app, :dns_cluster_query) || :ignore},
+      {Oban, Application.fetch_env!(:shopify_app, Oban)},
       {Phoenix.PubSub, name: ShopifyApp.PubSub},
       # Start a worker by calling: ShopifyApp.Worker.start_link(arg)
       # {ShopifyApp.Worker, arg},
