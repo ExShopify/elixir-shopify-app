@@ -46,6 +46,7 @@ defmodule ShopifyAppWeb.Endpoint do
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
     pass: ["*/*"],
+    body_reader: {ShopifyAPI.WebhookHMACValidator, :read_body, []},
     json_decoder: Phoenix.json_library()
 
   plug Plug.MethodOverride
