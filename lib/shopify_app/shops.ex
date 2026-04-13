@@ -30,6 +30,10 @@ defmodule ShopifyApp.Shops do
   @spec delete(t()) :: ok_changeset_error()
   def delete(%Schema.Shop{} = shop), do: Repo.delete(shop)
 
+  @spec update(t(), map()) :: ok_changeset_error()
+  def update(%Schema.Shop{} = shop, attrs),
+    do: shop |> Schema.Shop.changeset(attrs) |> Repo.update()
+
   def to_shopify_api_struct(%Schema.Shop{myshopify_domain: domain}),
     do: %ShopifyAPI.Shop{domain: domain}
 end

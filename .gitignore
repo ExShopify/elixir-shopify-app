@@ -42,6 +42,6 @@ npm-debug.log
 
 # shopify app-extensions
 /app-extension/node_modules/
-/app-extension/shopify.app.dev.toml
+/app-extension/shopify.app.dev.*
 
 .envrc.private

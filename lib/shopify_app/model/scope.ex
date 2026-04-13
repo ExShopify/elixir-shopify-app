@@ -28,14 +28,24 @@ defmodule ShopifyApp.Model.Scope do
     :user_token
   ]
 
-  @spec new(String.t()) :: t() | {:error, any()}
+  @spec new(String.t()) :: {:ok, t()} | {:error, any()}
+  @spec new(Schema.Shop.t()) :: {:ok, t()} | {:error, any()}
   @spec new(
           ShopifyAPI.App.t(),
           ShopifyAPI.Shop.t(),
           ShopifyAPI.AuthToken.t() | nil,
           ShopifyAPI.UserToken.t() | nil,
           Schema.Shop.t() | nil
-        ) :: t()
+        ) :: {:ok, t()}
+  def new(%Schema.Shop{} = shop) do
+    with {:ok, shopifyapi_shop} <- ShopifyAPI.ShopServer.get(shop.myshopify_domain),
+         {:ok, app} <- ShopifyAPI.AppServer.get(ShopifyApp.Config.app_name()),
+         {:ok, token} <-
+           ShopifyAPI.AuthTokenServer.get(shop.myshopify_domain, ShopifyApp.Config.app_name()) do
+      new(app, shopifyapi_shop, token, nil, shop)
+    end
+  end
+
   def new(myshopify_domain) when is_binary(myshopify_domain) do
     with {:ok, shopifyapi_shop} <- ShopifyAPI.ShopServer.get(myshopify_domain),
          {:ok, app} <- ShopifyAPI.AppServer.get(ShopifyApp.Config.app_name()),
@@ -59,14 +69,15 @@ defmodule ShopifyApp.Model.Scope do
         _ -> AsyncResult.loading()
       end
 
-    %__MODULE__{
-      app: app,
-      shop: shop,
-      shopifyapi_shop: shopifyapi_shop,
-      auth_token: auth_token,
-      user_token: user_token,
-      requested_at: NaiveDateTime.utc_now()
-    }
+    {:ok,
+     %__MODULE__{
+       app: app,
+       shop: shop,
+       shopifyapi_shop: shopifyapi_shop,
+       auth_token: auth_token,
+       user_token: user_token,
+       requested_at: NaiveDateTime.utc_now()
+     }}
   end
 
   def myshopify_domain(%__MODULE__{shopifyapi_shop: %ShopifyAPI.Shop{domain: domain}}),
@@ -74,9 +85,20 @@ defmodule ShopifyApp.Model.Scope do
 
   def myshopify_domain(%__MODULE__{shop: %Schema.Shop{myshopify_domain: domain}}), do: domain
 
+  @spec shop_slug(t()) :: String.t()
+  def shop_slug(%__MODULE__{} = scope),
+    do: scope |> myshopify_domain() |> ShopifyAPI.Shop.slug_from_domain()
+
   # cast/1 and equal?/2 are required to have this inside a changeset
   def cast(%__MODULE__{} = scope), do: {:ok, scope}
   def cast(nil), do: nil
 
   def equal?(a, b), do: a == b
+end
+
+defimpl ShopifyAPI.Scope, for: ShopifyApp.Model.Scope do
+  def shop(%{shopifyapi_shop: shop}), do: shop
+  def app(%{app: app}), do: app
+  def auth_token(%{auth_token: auth_token}), do: auth_token
+  def user_token(%{user_token: user_token}), do: user_token
 end

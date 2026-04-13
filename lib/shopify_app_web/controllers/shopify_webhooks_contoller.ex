@@ -3,6 +3,7 @@ defmodule ShopifyAppWeb.ShopifyWebhooksController do
   require Logger
 
   alias ShopifyAPI.Model.WebhookScope
+  alias ShopifyApp.Worker
 
   def webhook(
         %{
@@ -25,17 +26,18 @@ defmodule ShopifyAppWeb.ShopifyWebhooksController do
         _params
       ) do
     Logger.info("App uninstalled")
-    ShopifyApp.Worker.Uninstall.App.enqueue(webhook_scope.myshopify_domain)
+    Worker.Uninstall.App.enqueue(webhook_scope.myshopify_domain)
 
     json(conn, %{success: true})
   end
 
   def webhook(
-        %{assigns: %{webhook_scope: %WebhookScope{topic: "shop/update"} = _webhook_scope}} =
+        %{assigns: %{webhook_scope: %WebhookScope{topic: "shop/update"} = webhook_scope}} =
           conn,
         _params
       ) do
     Logger.info("Shop update")
+    Worker.ShopUpdate.enqueue(webhook_scope.myshopify_domain)
 
     json(conn, %{success: true})
   end

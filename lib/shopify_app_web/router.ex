@@ -1,6 +1,8 @@
 defmodule ShopifyAppWeb.Router do
   use ShopifyAppWeb, :router
 
+  import Oban.Web.Router
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -56,6 +58,14 @@ defmodule ShopifyAppWeb.Router do
     end
   end
 
+  live_session :unauthenticated,
+    layout: {ShopifyAppWeb.Unauthenticated.Layouts, :app},
+    root_layout: {ShopifyAppWeb.Unauthenticated.Layouts, :root} do
+    scope "/unauthenticated", ShopifyAppWeb.Unauthenticated do
+      live "/", DashboardLive.Index, :live
+    end
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", ShopifyAppWeb do
   #   pipe_through :api
@@ -74,6 +84,7 @@ defmodule ShopifyAppWeb.Router do
       pipe_through :browser
 
       live_dashboard "/dashboard", metrics: ShopifyAppWeb.Telemetry
+      oban_dashboard("/oban")
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
   end

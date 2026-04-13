@@ -2,8 +2,12 @@ alias ShopifyApp.Repo
 alias ShopifyApp.Shops
 
 defmodule IEXHelpers do
-  def to_atom(%ShopifyApp.Schema.Shop{} = shop),
-    do: shop.myshopify_domain |> String.replace("-", "_") |> String.to_atom()
+  def to_atom(%ShopifyApp.Schema.Shop{} = shop) do
+    shop.myshopify_domain
+    |> ShopifyAPI.Shop.slug_from_domain()
+    |> String.replace("-", "_")
+    |> String.to_atom()
+  end
 
   def get_token(%ShopifyApp.Schema.Shop{myshopify_domain: domain}),
     do: ShopifyApp.AuthTokens.find(domain)
@@ -21,6 +25,10 @@ end
 
 shops = Shops.all() |> Map.new(fn shop -> {IEXHelpers.to_atom(shop), shop} end)
 tokens = Map.new(shops, fn {key, shop} -> {key, IEXHelpers.get_token(shop)} end)
+
+scopes =
+  Map.new(shops, fn {key, shop} -> {key, shop |> ShopifyApp.Model.Scope.new() |> elem(1)} end)
+
 shops |> IEXHelpers.format_shops_msg() |> IO.puts()
 
 import_file_if_available(".iex.private.exs")

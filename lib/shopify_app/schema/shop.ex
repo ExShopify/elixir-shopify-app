@@ -8,13 +8,16 @@ defmodule ShopifyApp.Schema.Shop do
   schema "shops" do
     field :myshopify_domain, :string
 
+    # Synced from Shopify via shop/update webhook
+    field :shopify_shop_details, :map, default: %{}
+
     timestamps()
   end
 
   @doc false
   def changeset(shop, attrs) do
     shop
-    |> cast(attrs, [:myshopify_domain])
+    |> cast(attrs, [:myshopify_domain, :shopify_shop_details])
     |> validate_required([:myshopify_domain])
   end
 end

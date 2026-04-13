@@ -34,8 +34,6 @@ defmodule ShopifyApp.AuthTokens do
   end
 
   def upsert(%ShopifyAPI.AuthToken{} = token) do
-    token |> dbg()
-
     upsert(%{
       shop_myshopify_domain: token.shop_name,
       app_name: token.app_name,
@@ -45,8 +43,6 @@ defmodule ShopifyApp.AuthTokens do
   end
 
   def upsert(%{} = params) do
-    params |> dbg()
-
     %Schema.AuthToken{}
     |> Schema.AuthToken.changeset(params)
     |> Repo.insert(

@@ -10,6 +10,8 @@ defmodule ShopifyApp.Workflow.AppInstall do
 
   @spec call(t()) :: :ok
   def call(%{myshopify_domain: myshopify_domain} = context) when is_struct(context, __MODULE__) do
+    ShopifyApp.Worker.ShopUpdate.enqueue(myshopify_domain)
+
     Logger.debug("New install", myshopify_domain: myshopify_domain)
     :ok
   end
