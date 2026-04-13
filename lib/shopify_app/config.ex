@@ -6,7 +6,11 @@ defmodule ShopifyApp.Config do
   @app_scopes_string get_in(@shopify_config, ["access_scopes", "scopes"]) ||
                        raise("failed to parse app toml and fetch scopes")
 
-  @shop_webhooks ~w/APP_UNINSTALLED SHOP_UPDATE/
+  @webhook_config get_in(@shopify_config, ["webhooks", "subscriptions"]) ||
+                    raise("failed to parse app toml and fetch webhooks")
+  @shop_webhook_topics @webhook_config |> List.first() |> get_in(["topics"]) || []
+  @shop_webhook_compliance @webhook_config |> List.first() |> get_in(["compliance_topics"]) || []
+  @shop_webhooks @shop_webhook_topics ++ @shop_webhook_compliance
 
   def app_name, do: "shopify_app"
   def app_scopes_string, do: @app_scopes_string

@@ -98,6 +98,8 @@ config :shopify_api, ShopifyAPI.ShopServer,
 
 config :shopify_api, ShopifyAPI.Shop, post_login: {ShopifyApp.ShopifyAPI.PostLoginHook, :call, []}
 
+config :shopify_api, ShopifyAPI.GraphQL, graphql_version: "2026-04"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
