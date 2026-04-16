@@ -25,7 +25,7 @@ defmodule ShopifyApp.ShopTestSetup do
     myshopify_domain = Map.get(context, :myshopify_domain, myshopify_domain())
     shop = insert(:shop, myshopify_domain: myshopify_domain)
 
-    shopifyapi_shop = %ShopifyAPI.Shop{domain: shop.myshopify_domain}
+    shopifyapi_shop = %ShopifyAPI.Shop{myshopify_domain: myshopify_domain}
     ShopifyAPI.ShopServer.set(shopifyapi_shop, false)
 
     [shop: shop, shopifyapi_shop: shopifyapi_shop, myshopify_domain: myshopify_domain]
@@ -34,6 +34,7 @@ defmodule ShopifyApp.ShopTestSetup do
   def app(_context) do
     app = %ShopifyAPI.App{
       name: ShopifyApp.Config.app_name(),
+      handle: ShopifyApp.Config.app_handle(),
       client_id: "#{__MODULE__}.id",
       client_secret: "secret"
     }
@@ -52,8 +53,8 @@ defmodule ShopifyApp.ShopTestSetup do
 
   def auth_token(%{shop: %{myshopify_domain: myshopify_domain}}) do
     token = %ShopifyAPI.AuthToken{
-      shop_name: myshopify_domain,
-      app_name: ShopifyApp.Config.app_name()
+      myshopify_domain: myshopify_domain,
+      app_handle: ShopifyApp.Config.app_handle()
     }
 
     ShopifyAPI.AuthTokenServer.set(token, false)

@@ -6,7 +6,7 @@ defmodule ShopifyAppWeb.Hook.AdminAssignScope do
   This has a prerequisite of the user being authenticated through
   the AuthShopSessionToken or AdminAuthenticator plug first
   and we have the app and shop in the assigns.
-  We populate the session with the `app_name` and `myshopify_domain` from the assigns.
+  We populate the session with the `app_handle` and `myshopify_domain` from the assigns.
   We can now populate the socket assigns from the session and the respective servers.
 
   This is a good canditate for something that should be moved into ShopifyAPI.
@@ -45,27 +45,31 @@ defmodule ShopifyAppWeb.Hook.AdminAssignScope do
     associated_user_id = Map.get(user_token, :associated_user_id)
 
     %{
-      "app_name" => app.name,
-      "myshopify_domain" => shop.domain,
+      "app_handle" => app.handle,
+      "myshopify_domain" => shop.myshopify_domain,
       "associated_user_id" => associated_user_id
     }
   end
 
   @doc """
-  Build the assigns from the app name and the shop domain put in the session with build_session.
+  Build the assigns from the app label and the myshopify_domain put in the session with build_session.
   """
   def on_mount(
         :default,
         _params,
-        %{"app_name" => app_name, "myshopify_domain" => myshopify_domain} = session,
+        %{"app_handle" => app_handle, "myshopify_domain" => myshopify_domain} = session,
         socket
       ) do
-    with {:ok, app} <- fetch_app(app_name),
+    with {:ok, app} <- fetch_app(app_handle),
          {:ok, shopifyapi_shop} <- fetch_shop(myshopify_domain),
-         {:ok, shop} <- Shops.fetch(shopifyapi_shop.domain),
-         {:ok, auth_token} <- AuthTokenServer.get(shopifyapi_shop.domain, app.name) do
+         {:ok, shop} <- Shops.fetch(myshopify_domain),
+         {:ok, auth_token} <- AuthTokenServer.get(myshopify_domain, app.handle) do
       user_token =
-        case UserTokenServer.get_valid(myshopify_domain, app_name, session["associated_user_id"]) do
+        case UserTokenServer.get_valid(
+               myshopify_domain,
+               app_handle,
+               session["associated_user_id"]
+             ) do
           {:ok, token} -> token
           _ -> nil
         end
@@ -99,8 +103,8 @@ defmodule ShopifyAppWeb.Hook.AdminAssignScope do
     end
   end
 
-  defp fetch_app(app_name) do
-    case AppServer.get(app_name) do
+  defp fetch_app(app_handle) do
+    case AppServer.get(app_handle) do
       {:ok, app} -> {:ok, app}
       :error -> {:error, :app_not_found}
     end

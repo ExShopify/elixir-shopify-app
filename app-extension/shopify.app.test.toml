@@ -1,8 +1,8 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "TODO"
-name = "ShopifyApp"
-handle = "shopify-app"
+name = "Test App"
+handle = "test-app"
 application_url = "some-gnrok-url.ngrok-free.dev"
 embedded = true
 

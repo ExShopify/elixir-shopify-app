@@ -16,6 +16,6 @@ defmodule ShopifyApp.Query.UserToken do
   def from(Schema.UserToken), do: Query.from(u in Schema.UserToken, as: :user_token)
 
   @spec where_myshopify_domain(queryable(), String.t()) :: queryable()
-  def where_myshopify_domain(query \\ from(), myshopify_domain),
+  def where_myshopify_domain(query \\ from(), myshopify_domain) when is_binary(myshopify_domain),
     do: Query.where(query, [user_token: ut], ut.shop_myshopify_domain == ^myshopify_domain)
 end

@@ -13,5 +13,5 @@ defmodule ShopifyApp.Worker.Install.App do
   end
 
   def enqueue(%_{} = token),
-    do: %{myshopify_domain: token.shop_name} |> new() |> Oban.insert()
+    do: %{myshopify_domain: token.myshopify_domain} |> new() |> Oban.insert()
 end

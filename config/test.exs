@@ -42,3 +42,12 @@ config :phoenix,
   sort_verified_routes_query_params: true
 
 config :shopify_app, :shopify, api_key: "test", client_secret: "test"
+
+config :shopify_app, ShopifyApp.Config,
+  shopify_config_file:
+    Path.join([
+      __ENV__.file |> Path.expand() |> Path.dirname(),
+      "..",
+      "app-extension",
+      "shopify.app.test.toml"
+    ])

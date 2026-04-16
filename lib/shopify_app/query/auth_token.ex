@@ -16,10 +16,10 @@ defmodule ShopifyApp.Query.AuthToken do
   def from(Schema.AuthToken), do: Query.from(auth_token in Schema.AuthToken, as: :auth_token)
 
   @spec where_myshopify_domain(queryable(), String.t()) :: queryable()
-  def where_myshopify_domain(query \\ from(), myshopify_domain),
+  def where_myshopify_domain(query \\ from(), myshopify_domain) when is_binary(myshopify_domain),
     do: Query.where(query, [auth_token: at], at.shop_myshopify_domain == ^myshopify_domain)
 
-  @spec where_app_name(queryable(), String.t()) :: queryable()
-  def where_app_name(query \\ from(), app_name),
-    do: Query.where(query, [auth_token: at], at.app_name == ^app_name)
+  @spec where_app_handle(queryable(), String.t()) :: queryable()
+  def where_app_handle(query \\ from(), app_handle) when is_binary(app_handle),
+    do: Query.where(query, [auth_token: at], at.app_handle == ^app_handle)
 end

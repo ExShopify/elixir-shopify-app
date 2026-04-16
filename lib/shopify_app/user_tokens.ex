@@ -6,7 +6,7 @@ defmodule ShopifyApp.UserTokens do
   alias ShopifyApp.Schema
 
   @transferable_shopify_api_attrs [
-    :app_name,
+    :app_handle,
     :associated_user_id,
     :associated_user_scope,
     :associated_user,
@@ -31,7 +31,7 @@ defmodule ShopifyApp.UserTokens do
   def upsert(%ShopifyAPI.UserToken{} = token) do
     token
     |> Map.take(@transferable_shopify_api_attrs)
-    |> Map.put(:shop_myshopify_domain, token.shop_name)
+    |> Map.put(:shop_myshopify_domain, token.myshopify_domain)
     |> upsert()
   end
 
@@ -41,11 +41,12 @@ defmodule ShopifyApp.UserTokens do
     |> Repo.insert(on_conflict: :replace_all, conflict_target: [:associated_user_id])
   end
 
+  @spec to_shopify_api_struct(Schema.UserToken.t()) :: ShopifyAPI.UserToken.t()
   def to_shopify_api_struct(%Schema.UserToken{} = token) do
     attrs =
       token
       |> Map.take(@transferable_shopify_api_attrs)
-      |> Map.put(:shop_name, token.shop_myshopify_domain)
+      |> Map.put(:myshopify_domain, token.shop_myshopify_domain)
 
     struct(ShopifyAPI.UserToken, attrs)
   end

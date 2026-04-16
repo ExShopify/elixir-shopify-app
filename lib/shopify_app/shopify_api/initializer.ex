@@ -14,10 +14,10 @@ defmodule ShopifyApp.ShopifyAPI.Initializer do
 
   def shop_init, do: Enum.map(Shops.all(), &Shops.to_shopify_api_struct/1)
 
-  def shop_persist(%ShopifyAPI.AuthToken{shop_name: myshopify_domain}),
+  def shop_persist(%ShopifyAPI.AuthToken{myshopify_domain: myshopify_domain}),
     do: ShopifyApp.Shops.insert(%{myshopify_domain: myshopify_domain})
 
-  def shop_persist(_key, %ShopifyAPI.Shop{domain: myshopify_domain}),
+  def shop_persist(_key, %ShopifyAPI.Shop{myshopify_domain: myshopify_domain}),
     do: ShopifyApp.Shops.insert(%{myshopify_domain: myshopify_domain})
 
   def auth_token_init, do: Enum.map(AuthTokens.all(), &AuthTokens.to_shopify_api_struct/1)

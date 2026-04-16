@@ -34,6 +34,6 @@ defmodule ShopifyApp.Shops do
   def update(%Schema.Shop{} = shop, attrs),
     do: shop |> Schema.Shop.changeset(attrs) |> Repo.update()
 
-  def to_shopify_api_struct(%Schema.Shop{myshopify_domain: domain}),
-    do: %ShopifyAPI.Shop{domain: domain}
+  def to_shopify_api_struct(%Schema.Shop{myshopify_domain: myshopify_domain}),
+    do: %ShopifyAPI.Shop{myshopify_domain: myshopify_domain}
 end

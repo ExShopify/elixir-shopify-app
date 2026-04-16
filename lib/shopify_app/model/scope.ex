@@ -8,9 +8,7 @@ defmodule ShopifyApp.Model.Scope do
   alias ShopifyApp.Schema
   alias ShopifyApp.Shops
 
-  @type t() :: admin_t()
-
-  @type admin_t() :: %__MODULE__{
+  @type t() :: %__MODULE__{
           app: ShopifyAPI.App.t(),
           auth_token: ShopifyAPI.AuthToken.t(),
           requested_at: NaiveDateTime.t(),
@@ -39,18 +37,18 @@ defmodule ShopifyApp.Model.Scope do
         ) :: {:ok, t()}
   def new(%Schema.Shop{} = shop) do
     with {:ok, shopifyapi_shop} <- ShopifyAPI.ShopServer.get(shop.myshopify_domain),
-         {:ok, app} <- ShopifyAPI.AppServer.get(ShopifyApp.Config.app_name()),
+         {:ok, app} <- ShopifyAPI.AppServer.get(ShopifyApp.Config.app_handle()),
          {:ok, token} <-
-           ShopifyAPI.AuthTokenServer.get(shop.myshopify_domain, ShopifyApp.Config.app_name()) do
+           ShopifyAPI.AuthTokenServer.get(shop.myshopify_domain, ShopifyApp.Config.app_handle()) do
       new(app, shopifyapi_shop, token, nil, shop)
     end
   end
 
   def new(myshopify_domain) when is_binary(myshopify_domain) do
     with {:ok, shopifyapi_shop} <- ShopifyAPI.ShopServer.get(myshopify_domain),
-         {:ok, app} <- ShopifyAPI.AppServer.get(ShopifyApp.Config.app_name()),
+         {:ok, app} <- ShopifyAPI.AppServer.get(ShopifyApp.Config.app_handle()),
          {:ok, token} <-
-           ShopifyAPI.AuthTokenServer.get(myshopify_domain, ShopifyApp.Config.app_name()),
+           ShopifyAPI.AuthTokenServer.get(myshopify_domain, ShopifyApp.Config.app_handle()),
          {:ok, shop} <- Shops.fetch(myshopify_domain) do
       new(app, shopifyapi_shop, token, nil, shop)
     end
@@ -95,7 +93,7 @@ defmodule ShopifyApp.Model.Scope do
       when is_integer(associated_user_id) do
     case ShopifyAPI.UserTokenServer.get_valid(
            myshopify_domain(scope),
-           app_name(scope),
+           app_handle(scope),
            associated_user_id
          ) do
       {:ok, user_token} -> add_user_token(scope, user_token)
@@ -103,14 +101,23 @@ defmodule ShopifyApp.Model.Scope do
     end
   end
 
+  @spec add_shop(t(), Schema.Shop.t()) :: t()
   def add_shop(%__MODULE__{} = scope, %Schema.Shop{} = shop), do: %{scope | shop: shop}
 
+  @spec app_name(t()) :: String.t()
   def app_name(%__MODULE__{app: %ShopifyAPI.App{name: name}}), do: name
 
-  def myshopify_domain(%__MODULE__{shopifyapi_shop: %ShopifyAPI.Shop{domain: domain}}),
-    do: domain
+  @spec app_handle(t()) :: String.t()
+  def app_handle(%__MODULE__{app: %ShopifyAPI.App{handle: handle}}), do: handle
 
-  def myshopify_domain(%__MODULE__{shop: %Schema.Shop{myshopify_domain: domain}}), do: domain
+  @spec myshopify_domain(t()) :: String.t()
+  def myshopify_domain(%__MODULE__{
+        shopifyapi_shop: %ShopifyAPI.Shop{myshopify_domain: myshopify_domain}
+      }),
+      do: myshopify_domain
+
+  def myshopify_domain(%__MODULE__{shop: %Schema.Shop{myshopify_domain: myshopify_domain}}),
+    do: myshopify_domain
 
   @spec shop_slug(t()) :: String.t()
   def shop_slug(%__MODULE__{} = scope),

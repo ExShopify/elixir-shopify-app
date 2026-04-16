@@ -6,6 +6,6 @@ defmodule ShopifyApp.ShopifyAPI.PostLoginHook do
   @spec call(ShopifyAPI.UserToken.t()) :: any()
   def call(%ShopifyAPI.AuthToken{} = token), do: Worker.Install.App.enqueue(token)
 
-  def call(%ShopifyAPI.UserToken{shop_name: myshopify_domain, associated_user: user}),
+  def call(%ShopifyAPI.UserToken{myshopify_domain: myshopify_domain, associated_user: user}),
     do: Logger.debug("Login: #{user.email}", myshopify_domain: myshopify_domain)
 end
