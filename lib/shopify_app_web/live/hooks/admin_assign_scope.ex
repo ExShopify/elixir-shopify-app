@@ -70,7 +70,7 @@ defmodule ShopifyAppWeb.Hook.AdminAssignScope do
           _ -> nil
         end
 
-      scope =
+      {:ok, scope} =
         Model.Scope.new(
           app,
           shopifyapi_shop,

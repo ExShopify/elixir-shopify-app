@@ -15,6 +15,57 @@ defmodule ShopifyAppWeb.Unauthenticated.DashboardLive.Index do
   end
 
   @impl true
+  def render(assigns) do
+    ~H"""
+    <Layouts.app flash={@flash}>
+      <.s_box padding_block="large">
+        <.s_section id="ReconnectSection">
+          <.s_grid grid_template_columns="1fr auto" gap="base">
+            <:s_grid_item>
+              <.s_stack justify_content="space-between" gap="base">
+                <.s_stack>
+                  <.s_heading>Reconnecting session</.s_heading>
+                  <.s_box>
+                    Your session has temporariy been disconnected. If you are not automatically reconnected, click the button below.
+                  </.s_box>
+                </.s_stack>
+                <a
+                  id="LinkReturn"
+                  data-phx-hook="UnauthenticatedRedirect"
+                  phx-hook="UnauthenticatedRedirect"
+                  href={@return_url}
+                  target="_top"
+                >
+                  <.s_button
+                    id="ButtonReturn"
+                    href={@return_url}
+                    target="_top"
+                    loading={!@return_url}
+                    disabled={!@return_url}
+                  >
+                    Click to reconnect
+                  </.s_button>
+                </a>
+              </.s_stack>
+            </:s_grid_item>
+            <:s_grid_item>
+              <.s_stack
+                direction="inline"
+                justify_content="center"
+                align_items="center"
+                padding="large"
+              >
+                <.s_spinner size="large-100" accessibility_label="reconnecting" />
+              </.s_stack>
+            </:s_grid_item>
+          </.s_grid>
+        </.s_section>
+      </.s_box>
+    </Layouts.app>
+    """
+  end
+
+  @impl true
   def handle_params(
         %{"query_string" => query_string, "request_path" => request_path},
         _url,

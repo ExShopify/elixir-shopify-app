@@ -12,7 +12,10 @@ defmodule ShopifyApp.Config do
   @shop_webhook_compliance @webhook_config |> List.first() |> get_in(["compliance_topics"]) || []
   @shop_webhooks @shop_webhook_topics ++ @shop_webhook_compliance
 
-  def app_name, do: "shopify_app"
+  def shopify_toml_config, do: @shopify_config
+
+  def app_name, do: @shopify_config["name"]
+  def app_handle, do: @shopify_config["handle"]
   def app_scopes_string, do: @app_scopes_string
 
   def api_key, do: shopify_config(:api_key)

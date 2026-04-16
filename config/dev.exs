@@ -91,6 +91,15 @@ config :phoenix_live_view,
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
 
+config :shopify_app, ShopifyApp.Config,
+  shopify_config_file:
+    Path.join([
+      __ENV__.file |> Path.expand() |> Path.dirname(),
+      "..",
+      "app-extension",
+      "shopify.app.dev.toml"
+    ])
+
 # Disable query compile time caching for dev
 # config :shopify_admin_proxy, use_cached_queries: false
 

@@ -80,6 +80,33 @@ defmodule ShopifyApp.Model.Scope do
      }}
   end
 
+  @spec merge(t(), t()) :: t()
+  def merge(%__MODULE__{} = old_scope, %__MODULE__{} = new_scope) do
+    keep = Map.take(old_scope, [:user_token])
+    Map.merge(new_scope, keep)
+  end
+
+  @spec add_user_token(t(), ShopifyAPI.UserToken.t()) :: t()
+  @spec add_user_token(t(), integer()) :: t()
+  def add_user_token(%__MODULE__{} = scope, %ShopifyAPI.UserToken{} = user_token),
+    do: %{scope | user_token: AsyncResult.ok(scope.user_token, user_token)}
+
+  def add_user_token(%__MODULE__{} = scope, associated_user_id)
+      when is_integer(associated_user_id) do
+    case ShopifyAPI.UserTokenServer.get_valid(
+           myshopify_domain(scope),
+           app_name(scope),
+           associated_user_id
+         ) do
+      {:ok, user_token} -> add_user_token(scope, user_token)
+      _ -> scope
+    end
+  end
+
+  def add_shop(%__MODULE__{} = scope, %Schema.Shop{} = shop), do: %{scope | shop: shop}
+
+  def app_name(%__MODULE__{app: %ShopifyAPI.App{name: name}}), do: name
+
   def myshopify_domain(%__MODULE__{shopifyapi_shop: %ShopifyAPI.Shop{domain: domain}}),
     do: domain
 

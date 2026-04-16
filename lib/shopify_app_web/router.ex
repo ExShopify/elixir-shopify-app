@@ -17,9 +17,14 @@ defmodule ShopifyAppWeb.Router do
   end
 
   pipeline :shop_admin do
+    plug :put_root_layout, html: {ShopifyAppWeb.ShopAdminLive.Layouts, :root}
     plug ShopifyAPI.Plugs.AdminAuthenticator
     plug ShopifyAPI.Plugs.PutShopifyContentHeaders
     plug ShopifyApp.Plug.AdminValidator
+  end
+
+  pipeline :unauthenticated do
+    plug :put_root_layout, html: {ShopifyAppWeb.Unauthenticated.Layouts, :root}
   end
 
   pipeline :shopify_webhook do
@@ -43,10 +48,9 @@ defmodule ShopifyAppWeb.Router do
   end
 
   live_session :live_shop_admin,
-    layout: {ShopifyAppWeb.ShopAdminLive.Layouts, :app},
-    root_layout: {ShopifyAppWeb.ShopAdminLive.Layouts, :root},
     on_mount: [
       ShopifyAppWeb.Hook.AdminAssignScope,
+      ShopifyAppWeb.ShopAdmin.Hooks.ShopifyUserToken,
       ShopifyAppWeb.ShopAdmin.Hooks.AssignLayoutDefaults
     ],
     session: {ShopifyAppWeb.Hook.AdminAssignScope, :build_session, []} do
@@ -58,10 +62,9 @@ defmodule ShopifyAppWeb.Router do
     end
   end
 
-  live_session :unauthenticated,
-    layout: {ShopifyAppWeb.Unauthenticated.Layouts, :app},
-    root_layout: {ShopifyAppWeb.Unauthenticated.Layouts, :root} do
+  live_session :unauthenticated do
     scope "/unauthenticated", ShopifyAppWeb.Unauthenticated do
+      pipe_through :unauthenticated
       live "/", DashboardLive.Index, :live
     end
   end

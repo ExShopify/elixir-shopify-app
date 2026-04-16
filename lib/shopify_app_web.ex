@@ -66,7 +66,7 @@ defmodule ShopifyAppWeb do
 
   def unauthenticated_live_view do
     quote do
-      use Phoenix.LiveView, layout: {ShopifyAppWeb.Unauthenticated.Layouts, :app}
+      use Phoenix.LiveView
 
       import OctantisWeb.Components.Polaris
 
@@ -77,7 +77,7 @@ defmodule ShopifyAppWeb do
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
 
-      alias ShopifyAppWeb.Components.Links
+      alias ShopifyAppWeb.Unauthenticated.Layouts
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())
@@ -86,8 +86,9 @@ defmodule ShopifyAppWeb do
 
   def shop_admin_live_view do
     quote do
-      use Phoenix.LiveView,
-        layout: {ShopifyAppWeb.ShopAdminLive.Layouts, :app}
+      use Phoenix.LiveView
+
+      import OctantisWeb.Components.Polaris
 
       # HTML escaping functionality
       import Phoenix.HTML
@@ -95,6 +96,7 @@ defmodule ShopifyAppWeb do
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
+      alias ShopifyAppWeb.ShopAdminLive.Layouts
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())

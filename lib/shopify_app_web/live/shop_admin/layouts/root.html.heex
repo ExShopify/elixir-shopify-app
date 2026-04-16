@@ -7,19 +7,17 @@
     <meta name="shopify-api-key" content={ShopifyApp.Config.api_key()} />
 
     <%!-- Polaris CSS --%>
-    <link rel="stylesheet" href="https://unpkg.com/@shopify/polaris@13.9.0/build/esm/styles.css" />
-    <link rel="stylesheet" href="https://cdn.shopify.com/static/fonts/inter/v4/styles.css" />
-    <link phx-track-static rel="stylesheet" href={~p"/assets/shop_admin.css"} />
+    <OctantisWeb.Components.Head.stylesheet />
+    <link phx-track-static rel="stylesheet" href={~p"/assets/css/shop_admin.css"} />
     <%!-- AppBridge JS --%>
-    <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js">
-    </script>
-
-    <script defer data-phx-track-static type="text/javascript" src={~p"/assets/shop_admin.js"}>
+    <OctantisWeb.Components.Head.javascript />
+    <script defer data-phx-track-static type="text/javascript" src={~p"/assets/js/shop_admin.js"}>
     </script>
 
     <ui-nav-menu>
       <a href="/live_shop_admin/" rel="home">Root</a>
       <a href="/live_shop_admin/">Home</a>
+      <a href="/live_shop_admin/customer_rewards">Customer Rewards</a>
     </ui-nav-menu>
   </head>
   <body style="background-color: var(--p-color-bg-app); color: var(--p-color-text);">
