@@ -12,6 +12,8 @@ defmodule ShopifyApp.Config do
   @shop_webhook_compliance @webhook_config |> List.first() |> get_in(["compliance_topics"]) || []
   @shop_webhooks @shop_webhook_topics ++ @shop_webhook_compliance
 
+  @shop_admin_uri URI.new!("https://admin.shopify.com/store/")
+
   def shopify_toml_config, do: @shopify_config
 
   def app_name, do: @shopify_config["name"]
@@ -25,6 +27,27 @@ defmodule ShopifyApp.Config do
 
   @spec shop_webhooks() :: list(String.t())
   def shop_webhooks, do: @shop_webhooks
+
+  @doc """
+  Constructs the URI to the Shopify admin for a given scope.
+  """
+  @spec shop_admin_uri(ShopifyApp.Model.Scope.t()) :: URI.t()
+  def shop_admin_uri(%ShopifyApp.Model.Scope{} = scope) do
+    @shop_admin_uri
+    |> URI.append_path("/store")
+    |> URI.append_path("/" <> ShopifyApp.Model.Scope.shop_slug(scope))
+  end
+
+  @doc """
+  Constructs the URI to the app's page in the Shopify admin for a given scope.
+  """
+  @spec shop_admin_app_uri(ShopifyApp.Model.Scope.t()) :: URI.t()
+  def shop_admin_app_uri(%ShopifyApp.Model.Scope{} = scope) do
+    scope
+    |> shop_admin_uri()
+    |> URI.append_path("/apps")
+    |> URI.append_path("/" <> ShopifyApp.Model.Scope.app_handle(scope))
+  end
 
   defp shopify_config(key), do: :shopify_app |> Application.get_env(:shopify) |> Keyword.get(key)
 end

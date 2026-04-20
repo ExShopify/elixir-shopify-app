@@ -1,13 +1,11 @@
 defmodule ShopifyAppWeb.Unauthenticated.DashboardLive.Index do
   use ShopifyAppWeb, :unauthenticated_live_view
-
   import OctantisWeb.Components.Polaris
+  require Logger
 
   alias ShopifyApp.Model
 
   alias ShopifyAPI.JWTSessionToken
-
-  require Logger
 
   @impl true
   def mount(_params, _session, socket) do
@@ -99,9 +97,7 @@ defmodule ShopifyAppWeb.Unauthenticated.DashboardLive.Index do
          {:ok, scope} <- Model.Scope.new(myshopify_domain) do
       return_url =
         scope
-        |> shop_base()
-        |> URI.append_path("/admin/apps/")
-        |> URI.append_path("/" <> app.handle)
+        |> ShopifyApp.Config.shop_admin_app_uri()
         |> URI.append_path(socket.assigns.request_path)
         |> URI.append_query(socket.assigns.query_string)
         |> to_string()
@@ -116,14 +112,5 @@ defmodule ShopifyAppWeb.Unauthenticated.DashboardLive.Index do
         {:noreply,
          socket |> assign(:return_url, issuer) |> push_event("UnauthenticatedRedirect", %{})}
     end
-  end
-
-  def shop_base(%Model.Scope{} = scope) do
-    # TODO revert this back to, when issue: https://github.com/jeremyjh/dialyxir/issues/571
-    # @admin_shopify_uri
-    # |> URI.append_path("/store")
-    # |> URI.append_path("/" <> shop_slug)
-    shop_slug = scope |> Model.Scope.shop_slug()
-    URI.new!("https://admin.shopify.com/store/#{shop_slug}")
   end
 end

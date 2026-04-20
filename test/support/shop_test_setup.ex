@@ -2,23 +2,19 @@ defmodule ShopifyApp.ShopTestSetup do
   import ShopifyApp.Factory
 
   def app_auth_token_shop(context) do
-    [shop: shop, shopifyapi_shop: _] = shop(context)
+    [shop: shop, shopifyapi_shop: _, myshopify_domain: _] = shop(context)
     [app: app] = app(context)
     [token: token] = auth_token(%{shop: shop})
     [shop_admin_token: shop_admin_token] = shop_admin_token(%{shop: shop, app: app})
+    [scope: scope] = scope(%{shop: shop})
 
     [
       app: app,
       auth_token: token,
       shop: shop,
-      shop_admin_token: shop_admin_token
+      shop_admin_token: shop_admin_token,
+      scope: scope
     ]
-  end
-
-  def shopifyapi_bypass(_context) do
-    bypass = Bypass.open()
-
-    [bypass: bypass, myshopify_domain: "localhost:#{bypass.port}"]
   end
 
   def shop(context) do
@@ -29,6 +25,11 @@ defmodule ShopifyApp.ShopTestSetup do
     ShopifyAPI.ShopServer.set(shopifyapi_shop, false)
 
     [shop: shop, shopifyapi_shop: shopifyapi_shop, myshopify_domain: myshopify_domain]
+  end
+
+  def scope(%{shop: %{myshopify_domain: myshopify_domain}}) do
+    {:ok, scope} = ShopifyApp.Model.Scope.new(myshopify_domain)
+    [scope: scope]
   end
 
   def app(_context) do

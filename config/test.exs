@@ -43,6 +43,8 @@ config :phoenix,
 
 config :shopify_app, :shopify, api_key: "test", client_secret: "test"
 
+config :shopify_api, :transport, "http"
+
 config :shopify_app, ShopifyApp.Config,
   shopify_config_file:
     Path.join([
