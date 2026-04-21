@@ -1,0 +1,31 @@
+query GetShopDetails {
+  shop {
+    id
+    name
+    email
+    contactEmail
+    myshopifyDomain
+    shopOwnerName
+    currencyCode
+    ianaTimezone
+    createdAt
+    updatedAt
+    primaryDomain {
+      host
+      url
+    }
+    shopAddress {
+      address1
+      address2
+      city
+      province
+      country
+      zip
+    }
+    plan {
+      displayName
+      partnerDevelopment
+      shopifyPlus
+    }
+  }
+}

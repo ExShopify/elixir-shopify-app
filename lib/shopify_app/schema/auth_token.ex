@@ -3,8 +3,10 @@ defmodule ShopifyApp.Schema.AuthToken do
   use ShopifyApp.Schema
   import Ecto.Changeset
 
+  @type t :: %__MODULE__{}
+
   schema "auth_tokens" do
-    field :app_name, :string
+    field :app_handle, :string
     field :plus, :boolean, default: false
     field :token, :string
 
@@ -19,7 +21,7 @@ defmodule ShopifyApp.Schema.AuthToken do
   @doc false
   def changeset(auth_token, attrs) do
     auth_token
-    |> cast(attrs, [:app_name, :shop_myshopify_domain, :token, :plus])
-    |> validate_required([:app_name, :shop_myshopify_domain, :token, :plus])
+    |> cast(attrs, [:app_handle, :shop_myshopify_domain, :token, :plus])
+    |> validate_required([:app_handle, :shop_myshopify_domain, :token, :plus])
   end
 end

@@ -7,15 +7,22 @@
 # General application configuration
 import Config
 
+config :shopify_app, Oban,
+  engine: Oban.Engines.Basic,
+  notifier: Oban.Notifiers.Postgres,
+  queues: [default: 10],
+  repo: ShopifyApp.Repo
+
 config :shopify_app, ShopifyApp.Repo, migration_primary_key: [type: :binary_id]
 
 config :shopify_app,
   ecto_repos: [ShopifyApp.Repo],
   generators: [timestamp_type: :utc_datetime, binary_id: true]
 
-# Configures the endpoint
+# Configure the endpoint
 config :shopify_app, ShopifyAppWeb.Endpoint,
   url: [host: "localhost"],
+  adapter: Bandit.PhoenixAdapter,
   render_errors: [
     formats: [html: ShopifyAppWeb.ErrorHTML, json: ShopifyAppWeb.ErrorJSON],
     layout: false
@@ -23,7 +30,7 @@ config :shopify_app, ShopifyAppWeb.Endpoint,
   pubsub_server: ShopifyApp.PubSub,
   live_view: [signing_salt: "ohBcnlqz"]
 
-# Configures the mailer
+# Configure the mailer
 #
 # By default it uses the "Local" adapter which stores the emails
 # locally. You can see the emails in your browser, at "/dev/mailbox".
@@ -34,28 +41,35 @@ config :shopify_app, ShopifyApp.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,
-  version: "0.14.41",
-  default: [
+  version: "0.25.4",
+  shopify_app: [
     args:
-      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+      ~w(js/app.js js/shop_admin.js js/unauthenticated.js --bundle --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
     cd: Path.expand("../assets", __DIR__),
-    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+    env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
   ]
 
 # Configure tailwind (the version is required)
 config :tailwind,
-  version: "3.2.4",
-  default: [
+  version: "4.1.12",
+  shopify_app: [
+    args: ~w(
+      --input=assets/css/app.css
+      --output=priv/static/assets/css/app.css
+    ),
+    cd: Path.expand("..", __DIR__)
+  ],
+  shop_admin: [
     args: ~w(
       --config=tailwind.config.js
-      --input=css/app.css
-      --output=../priv/static/assets/app.css
+      --input=css/shopadmin.css
+      --output=../priv/static/assets/shop_admin.css
     ),
     cd: Path.expand("../assets", __DIR__)
   ]
 
-# Configures Elixir's Logger
-config :logger, :console,
+# Configure Elixir's Logger
+config :logger, :default_formatter,
   format: "$time [$level] $message [$metadata]\n",
   metadata: [:request_id, :mta, :error, :myshopify_domain, :shopify_object_id]
 
@@ -91,6 +105,8 @@ config :shopify_api, ShopifyAPI.ShopServer,
   persistence: {ShopifyApp.ShopifyAPI.Initializer, :shop_persist, []}
 
 config :shopify_api, ShopifyAPI.Shop, post_login: {ShopifyApp.ShopifyAPI.PostLoginHook, :call, []}
+
+config :shopify_api, ShopifyAPI.GraphQL, graphql_version: "2026-04"
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

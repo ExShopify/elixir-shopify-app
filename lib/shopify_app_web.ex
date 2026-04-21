@@ -38,9 +38,7 @@ defmodule ShopifyAppWeb do
 
   def controller do
     quote do
-      use Phoenix.Controller,
-        formats: [:html, :json],
-        layouts: [html: ShopifyAppWeb.Layouts]
+      use Phoenix.Controller, formats: [:html, :json]
 
       use Gettext, backend: ShopifyAppWeb.Gettext
 
@@ -52,8 +50,7 @@ defmodule ShopifyAppWeb do
 
   def live_view do
     quote do
-      use Phoenix.LiveView,
-        layout: {ShopifyAppWeb.Layouts, :app}
+      use Phoenix.LiveView
 
       unquote(html_helpers())
     end
@@ -64,6 +61,45 @@ defmodule ShopifyAppWeb do
       use Phoenix.LiveComponent
 
       unquote(html_helpers())
+    end
+  end
+
+  def unauthenticated_live_view do
+    quote do
+      use Phoenix.LiveView
+
+      import OctantisWeb.Components.Polaris
+
+      # HTML escaping functionality
+      import Phoenix.HTML
+      import ShopifyAppWeb.Gettext
+
+      # Shortcut for generating JS commands
+      alias Phoenix.LiveView.JS
+
+      alias ShopifyAppWeb.Unauthenticated.Layouts
+
+      # Routes generation with the ~p sigil
+      unquote(verified_routes())
+    end
+  end
+
+  def shop_admin_live_view do
+    quote do
+      use Phoenix.LiveView
+
+      import OctantisWeb.Components.Polaris
+
+      # HTML escaping functionality
+      import Phoenix.HTML
+      import ShopifyAppWeb.Gettext
+
+      # Shortcut for generating JS commands
+      alias Phoenix.LiveView.JS
+      alias ShopifyAppWeb.ShopAdminLive.Layouts
+
+      # Routes generation with the ~p sigil
+      unquote(verified_routes())
     end
   end
 
@@ -82,15 +118,17 @@ defmodule ShopifyAppWeb do
 
   defp html_helpers do
     quote do
+      # Translation
       use Gettext, backend: ShopifyAppWeb.Gettext
 
       # HTML escaping functionality
       import Phoenix.HTML
-      # Core UI components and translation
+      # Core UI components
       import ShopifyAppWeb.CoreComponents
 
-      # Shortcut for generating JS commands
+      # Common modules used in templates
       alias Phoenix.LiveView.JS
+      alias ShopifyAppWeb.Layouts
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())
@@ -107,7 +145,7 @@ defmodule ShopifyAppWeb do
   end
 
   @doc """
-  When used, dispatch to the appropriate controller/view/etc.
+  When used, dispatch to the appropriate controller/live_view/etc.
   """
   defmacro __using__(which) when is_atom(which) do
     apply(__MODULE__, which, [])

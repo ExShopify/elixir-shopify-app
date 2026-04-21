@@ -8,7 +8,7 @@ defmodule ShopifyApp.Schema.UserToken do
   @type t :: %__MODULE__{}
 
   schema "user_tokens" do
-    field :app_name, :string
+    field :app_handle, :string
     field :code, :string
     field :token, :string
     field :associated_user_id, :integer
@@ -31,7 +31,7 @@ defmodule ShopifyApp.Schema.UserToken do
   def changeset(auth_token, attrs) do
     auth_token
     |> cast(attrs, [
-      :app_name,
+      :app_handle,
       :shop_myshopify_domain,
       :code,
       :token,
@@ -43,6 +43,6 @@ defmodule ShopifyApp.Schema.UserToken do
       :expires_in,
       :associated_user
     ])
-    |> validate_required([:app_name, :shop_myshopify_domain, :token, :plus])
+    |> validate_required([:app_handle, :shop_myshopify_domain, :token, :plus])
   end
 end

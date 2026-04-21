@@ -1,11 +1,13 @@
 defmodule ShopifyAppWeb.Router do
   use ShopifyAppWeb, :router
 
+  import Oban.Web.Router
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_live_flash
-    plug :put_root_layout, {ShopifyAppWeb.Layouts, :root}
+    plug :put_root_layout, html: {ShopifyAppWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
   end
@@ -15,26 +17,56 @@ defmodule ShopifyAppWeb.Router do
   end
 
   pipeline :shop_admin do
-    plug ShopifyAPI.Plugs.AdminAuthenticator, shopify_router_mount: "/shop"
+    plug :put_root_layout, html: {ShopifyAppWeb.ShopAdminLive.Layouts, :root}
+    plug ShopifyAPI.Plugs.AdminAuthenticator
     plug ShopifyAPI.Plugs.PutShopifyContentHeaders
+    plug ShopifyApp.Plug.AdminValidator
   end
 
-  scope "/", ShopifyAppWeb do
-    pipe_through :browser
-
-    get "/", PageController, :index
+  pipeline :unauthenticated do
+    plug :put_root_layout, html: {ShopifyAppWeb.Unauthenticated.Layouts, :root}
   end
+
+  pipeline :shopify_webhook do
+    plug ShopifyAPI.Plugs.WebhookEnsureValidation
+    plug ShopifyAPI.Plugs.WebhookScopeSetup
+  end
+
+  #  scope "/", ShopifyAppWeb do
+  #    pipe_through :browser
+  #
+  #    get "/", PageController, :index
+  #  end
 
   scope "/shop", ShopifyAPI do
     forward("/", Router)
   end
 
-  scope "/shop_admin/:app", ShopifyAppWeb do
-    pipe_through :browser
-    pipe_through :shop_admin
+  scope "/shopify/webhook", ShopifyAppWeb do
+    pipe_through :shopify_webhook
+    post "/", ShopifyWebhooksController, :webhook
+  end
 
-    get "/", ShopAdminController, :index
-    get "/*path", ShopAdminController, :index
+  live_session :live_shop_admin,
+    on_mount: [
+      ShopifyAppWeb.Hook.AdminAssignScope,
+      ShopifyAppWeb.ShopAdmin.Hooks.ShopifyUserToken,
+      ShopifyAppWeb.ShopAdmin.Hooks.AssignLayoutDefaults
+    ],
+    session: {ShopifyAppWeb.Hook.AdminAssignScope, :build_session, []} do
+    scope "/live_shop_admin", ShopifyAppWeb do
+      pipe_through :browser
+      pipe_through :shop_admin
+
+      live "/", ShopAdmin.DashboardLive.Index, :live
+    end
+  end
+
+  live_session :unauthenticated do
+    scope "/unauthenticated", ShopifyAppWeb.Unauthenticated do
+      pipe_through :unauthenticated
+      live "/", DashboardLive.Index, :live
+    end
   end
 
   # Other scopes may use custom stacks.
@@ -55,6 +87,7 @@ defmodule ShopifyAppWeb.Router do
       pipe_through :browser
 
       live_dashboard "/dashboard", metrics: ShopifyAppWeb.Telemetry
+      oban_dashboard("/oban")
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
   end

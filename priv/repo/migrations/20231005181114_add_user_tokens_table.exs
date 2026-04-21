@@ -3,7 +3,7 @@ defmodule ShopifyApp.Repo.Migrations.AddUserTokensTable do
 
   def change do
     create table(:user_tokens) do
-      add :app_name, :text
+      add :app_handle, :text
       add :code, :text
       add :token, :text
       add :associated_user_id, :bigint
@@ -21,6 +21,6 @@ defmodule ShopifyApp.Repo.Migrations.AddUserTokensTable do
     end
 
     create unique_index(:user_tokens, :associated_user_id)
-    create index(:user_tokens, [:shop_myshopify_domain, :app_name])
+    create index(:user_tokens, [:shop_myshopify_domain, :app_handle])
   end
 end

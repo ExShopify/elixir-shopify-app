@@ -1,13 +1,19 @@
 defmodule ShopifyApp.Workflow.AppUninstall do
+  alias ShopifyApp.Shops
+
   @type t() :: %__MODULE__{myshopify_domain: String.t()}
   @enforce_keys [:myshopify_domain]
   defstruct @enforce_keys
 
   @spec call(t()) :: :ok
   def call(%{myshopify_domain: myshopify_domain} = context) when is_struct(context, __MODULE__) do
-    {:ok, _} = myshopify_domain |> ShopifyApp.Shops.find() |> ShopifyApp.Shops.delete()
+    case Shops.fetch(myshopify_domain) do
+      {:ok, shop} -> {:ok, _} = Shops.delete(shop)
+      _ -> :ok
+    end
+
     :ok = ShopifyAPI.ShopServer.delete(myshopify_domain)
-    :ok = ShopifyAPI.AuthTokenServer.delete(myshopify_domain, ShopifyApp.Config.app_name())
+    :ok = ShopifyAPI.AuthTokenServer.delete(myshopify_domain, ShopifyApp.Config.app_handle())
     :ok = ShopifyAPI.UserTokenServer.delete_for_shop(myshopify_domain)
   end
 

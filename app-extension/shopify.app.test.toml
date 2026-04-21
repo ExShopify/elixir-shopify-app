@@ -1,0 +1,29 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "TODO"
+name = "Test App"
+handle = "test-app"
+application_url = "some-gnrok-url.ngrok-free.dev"
+embedded = true
+
+[webhooks]
+api_version = "2026-04"
+
+  [[webhooks.subscriptions]]
+  topics = [
+  "app_subscriptions/update",
+  "app/scopes_update",
+  "app/uninstalled",
+  "shop/update"
+  ]
+  uri = "some-gnrok-url.ngrok-free.dev"
+  compliance_topics = [ "customers/data_request", "customers/redact", "shop/redact" ]
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = ""
+optional_scopes = [ ]
+use_legacy_install_flow = false
+
+[auth]
+redirect_urls = [ ]

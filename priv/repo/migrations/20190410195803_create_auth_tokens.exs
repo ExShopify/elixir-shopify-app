@@ -3,7 +3,7 @@ defmodule ShopifyApp.Repo.Migrations.CreateAuthTokens do
 
   def change do
     create table(:auth_tokens) do
-      add :app_name, :text
+      add :app_handle, :text
       add :token, :text
       add :plus, :boolean, default: false, null: false
 
@@ -13,6 +13,6 @@ defmodule ShopifyApp.Repo.Migrations.CreateAuthTokens do
       timestamps()
     end
 
-    create unique_index(:auth_tokens, [:shop_myshopify_domain, :app_name])
+    create unique_index(:auth_tokens, [:shop_myshopify_domain, :app_handle])
   end
 end

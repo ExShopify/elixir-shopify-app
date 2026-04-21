@@ -8,19 +8,16 @@ defmodule ShopifyApp.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      # Start the Telemetry supervisor
       ShopifyAppWeb.Telemetry,
-      # Start the Ecto repository
       ShopifyApp.Repo,
-      # Start the PubSub system
+      {DNSCluster, query: Application.get_env(:shopify_app, :dns_cluster_query) || :ignore},
+      {Oban, Application.fetch_env!(:shopify_app, Oban)},
       {Phoenix.PubSub, name: ShopifyApp.PubSub},
-      # Start Finch
-      {Finch, name: ShopifyApp.Finch},
-      # Start the Endpoint (http/https)
+      # Start a worker by calling: ShopifyApp.Worker.start_link(arg)
+      # {ShopifyApp.Worker, arg},
+      # Start to serve requests, typically the last entry
       ShopifyAppWeb.Endpoint,
       ShopifyAPI.Supervisor
-      # Start a worker by calling: ShopifyApp.Worker.start_link(arg)
-      # {ShopifyApp.Worker, arg}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

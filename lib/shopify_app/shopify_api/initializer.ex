@@ -5,24 +5,19 @@ defmodule ShopifyApp.ShopifyAPI.Initializer do
   alias ShopifyApp.UserTokens
 
   def app_init do
-    [
-      %ShopifyAPI.App{
-        name: ShopifyApp.Config.app_name(),
-        client_id: ShopifyApp.Config.api_key(),
-        client_secret: ShopifyApp.Config.api_secret(),
-        auth_redirect_uri: ShopifyApp.Config.auth_redirect_uri(),
-        nonce: "test",
-        scope: ShopifyApp.Config.app_scopes_string()
-      }
-    ]
+    ShopifyApp.Config.shopify_toml_config()
+    |> ShopifyAPI.App.new()
+    |> ShopifyAPI.App.with_client_secret(ShopifyApp.Config.api_secret())
+    |> Map.merge(%{nonce: "test"})
+    |> List.wrap()
   end
 
   def shop_init, do: Enum.map(Shops.all(), &Shops.to_shopify_api_struct/1)
 
-  def shop_persist(%ShopifyAPI.AuthToken{shop_name: myshopify_domain}),
+  def shop_persist(%ShopifyAPI.AuthToken{myshopify_domain: myshopify_domain}),
     do: ShopifyApp.Shops.insert(%{myshopify_domain: myshopify_domain})
 
-  def shop_persist(_key, %ShopifyAPI.Shop{domain: myshopify_domain}),
+  def shop_persist(_key, %ShopifyAPI.Shop{myshopify_domain: myshopify_domain}),
     do: ShopifyApp.Shops.insert(%{myshopify_domain: myshopify_domain})
 
   def auth_token_init, do: Enum.map(AuthTokens.all(), &AuthTokens.to_shopify_api_struct/1)

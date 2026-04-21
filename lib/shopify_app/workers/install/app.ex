@@ -12,6 +12,6 @@ defmodule ShopifyApp.Worker.Install.App do
     :ok
   end
 
-  def enqueue_callback(%_{} = token),
-    do: %{myshopify_domain: token.shop_name} |> new() |> Oban.insert()
+  def enqueue(%_{} = token),
+    do: %{myshopify_domain: token.myshopify_domain} |> new() |> Oban.insert()
 end
