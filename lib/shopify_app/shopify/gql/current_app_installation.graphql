@@ -1,0 +1,38 @@
+query CurrentAppInstallation {
+    currentAppInstallation {
+        id
+        launchUrl
+        activeSubscriptions {
+            id
+            name
+            test
+            status
+            returnUrl
+            trialDays
+            createdAt
+            lineItems {
+                plan {
+                    pricingDetails {
+                        ... on AppRecurringPricing {
+                            interval
+                            price {
+                                amount
+                            }
+                            discount {
+                                durationLimitInIntervals
+                                priceAfterDiscount {
+                                    amount
+                                }
+                                value {
+                                    ... on AppSubscriptionDiscountPercentage {
+                                        percentage
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

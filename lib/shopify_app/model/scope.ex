@@ -7,12 +7,14 @@ defmodule ShopifyApp.Model.Scope do
   alias Phoenix.LiveView.AsyncResult
   alias ShopifyApp.Schema
   alias ShopifyApp.Shops
+  alias ShopifyApp.ShopSubscriptions
 
   @type t() :: %__MODULE__{
           app: ShopifyAPI.App.t(),
           auth_token: ShopifyAPI.AuthToken.t(),
           requested_at: NaiveDateTime.t(),
           shop: Schema.Shop.t(),
+          shop_subscription: Schema.ShopSubscription.t() | nil,
           shopifyapi_shop: ShopifyAPI.Shop.t(),
           user_token: %AsyncResult{}
         }
@@ -22,6 +24,7 @@ defmodule ShopifyApp.Model.Scope do
     :auth_token,
     :requested_at,
     :shop,
+    :shop_subscription,
     :shopifyapi_shop,
     :user_token
   ]
@@ -33,14 +36,16 @@ defmodule ShopifyApp.Model.Scope do
           ShopifyAPI.Shop.t(),
           ShopifyAPI.AuthToken.t() | nil,
           ShopifyAPI.UserToken.t() | nil,
-          Schema.Shop.t() | nil
+          Schema.Shop.t() | nil,
+          Schema.ShopSubscription.t() | nil
         ) :: {:ok, t()}
   def new(%Schema.Shop{} = shop) do
     with {:ok, shopifyapi_shop} <- ShopifyAPI.ShopServer.get(shop.myshopify_domain),
          {:ok, app} <- ShopifyAPI.AppServer.get(ShopifyApp.Config.app_handle()),
          {:ok, token} <-
-           ShopifyAPI.AuthTokenServer.get(shop.myshopify_domain, ShopifyApp.Config.app_handle()) do
-      new(app, shopifyapi_shop, token, nil, shop)
+           ShopifyAPI.AuthTokenServer.get(shop.myshopify_domain, ShopifyApp.Config.app_handle()),
+         shop_subscription <- ShopSubscriptions.find_active(shop.myshopify_domain) do
+      new(app, shopifyapi_shop, token, nil, shop, shop_subscription)
     end
   end
 
@@ -49,8 +54,9 @@ defmodule ShopifyApp.Model.Scope do
          {:ok, app} <- ShopifyAPI.AppServer.get(ShopifyApp.Config.app_handle()),
          {:ok, token} <-
            ShopifyAPI.AuthTokenServer.get(myshopify_domain, ShopifyApp.Config.app_handle()),
-         {:ok, shop} <- Shops.fetch(myshopify_domain) do
-      new(app, shopifyapi_shop, token, nil, shop)
+         {:ok, shop} <- Shops.fetch(myshopify_domain),
+         shop_subscription <- ShopSubscriptions.find_active(myshopify_domain) do
+      new(app, shopifyapi_shop, token, nil, shop, shop_subscription)
     end
   end
 
@@ -59,7 +65,8 @@ defmodule ShopifyApp.Model.Scope do
         %ShopifyAPI.Shop{} = shopifyapi_shop,
         auth_token,
         user_token,
-        shop
+        shop,
+        shop_subscription \\ nil
       ) do
     user_token =
       case user_token do
@@ -71,6 +78,7 @@ defmodule ShopifyApp.Model.Scope do
      %__MODULE__{
        app: app,
        shop: shop,
+       shop_subscription: shop_subscription,
        shopifyapi_shop: shopifyapi_shop,
        auth_token: auth_token,
        user_token: user_token,
